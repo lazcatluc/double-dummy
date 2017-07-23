@@ -1,9 +1,8 @@
 package ro.contezi.dd;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import ro.contezi.dd.cards.Card;
@@ -19,12 +18,25 @@ public class TrickPlayer {
         this.equivalentCards = equivalentCards;
     }
     
-    Set<Card<?>> getContinuations() {
-        Optional<Set<Card<?>>> cardsInTheSameSuitAsFirstCardOfTrick = trick.getFirstCard().map(Card::getClass)
-            .map(clazz -> playerCards.stream().filter(clazz::isInstance).collect(Collectors.toSet()));
+    List<Card<?>> getContinuations() {
+        Optional<List<Card<?>>> cardsInTheSameSuitAsFirstCardOfTrick = trick.getFirstCard().map(Card::getClass)
+            .map(clazz -> playerCards.stream().filter(clazz::isInstance).collect(Collectors.toList()));
         if (cardsInTheSameSuitAsFirstCardOfTrick.isPresent() && !cardsInTheSameSuitAsFirstCardOfTrick.get().isEmpty()) {
             return cardsInTheSameSuitAsFirstCardOfTrick.get();
         }
-        return new HashSet<>(playerCards);
+        return playerCards;
+    }
+    
+    public List<Trick> getNextTricks() {
+        List<Card<?>> continuations = getContinuations();
+        List<Trick> newTricks = new ArrayList<>();
+        newTricks.add(trick.add(continuations.get(0)));
+        for (int i = 1; i < continuations.size(); i++) {
+            if (equivalentCards.areEquivalent(continuations.get(i), continuations.get(i - 1))) {
+                continue;
+            }
+            newTricks.add(trick.add(continuations.get(i)));
+        }
+        return newTricks;
     }
 }

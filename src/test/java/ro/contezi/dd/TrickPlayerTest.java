@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Test;
@@ -23,7 +22,7 @@ public class TrickPlayerTest {
         List<Card<?>> playerCards = Arrays.asList(new Spade(3), new Heart(4), new Spade(5));
         
         assertThat(new TrickPlayer(trick, playerCards, (c1, c2) -> false).getContinuations())
-            .isEqualTo(new HashSet<>(Arrays.asList(new Spade(3), new Spade(5))));
+            .isEqualTo(Arrays.asList(new Spade(3), new Spade(5)));
     }
 
     @Test
@@ -32,7 +31,7 @@ public class TrickPlayerTest {
         List<Card<?>> playerCards = Arrays.asList(new Diamond(3), new Heart(4), new Club(5));
         
         assertThat(new TrickPlayer(trick, playerCards, (c1, c2) -> false).getContinuations())
-            .isEqualTo(new HashSet<>(Arrays.asList(new Diamond(3), new Heart(4), new Club(5))));
+            .isEqualTo(Arrays.asList(new Diamond(3), new Heart(4), new Club(5)));
     }
     
     @Test
@@ -41,6 +40,16 @@ public class TrickPlayerTest {
         List<Card<?>> playerCards = Arrays.asList(new Diamond(3), new Heart(4), new Club(5));
         
         assertThat(new TrickPlayer(trick, playerCards, (c1, c2) -> false).getContinuations())
-            .isEqualTo(new HashSet<>(Arrays.asList(new Diamond(3), new Heart(4), new Club(5))));
+            .isEqualTo(Arrays.asList(new Diamond(3), new Heart(4), new Club(5)));
+    }
+    
+    @Test
+    public void getsNewTricksWithOnlyOneOfTouchingCards() {
+        Trick trick = new Trick(Arrays.asList(new Spade(2)));
+        List<Card<?>> playerCards = Arrays.asList(new Spade(3), new Spade(4), new Spade(5), new Spade(9));
+        
+        assertThat(new TrickPlayer(trick, playerCards, new TouchingCards()).getNextTricks())
+            .isEqualTo(Arrays.asList(new Trick(Arrays.asList(new Spade(2), new Spade(3))),
+                                     new Trick(Arrays.asList(new Spade(2), new Spade(9)))));
     }
 }
