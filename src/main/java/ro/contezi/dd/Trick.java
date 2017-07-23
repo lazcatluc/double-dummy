@@ -18,4 +18,8 @@ public class Trick {
                                        .sorted((c1, c2) -> c2.compareTo(c1))
                                        .findFirst());
     }
+    
+    public boolean isComplete() {
+        return cards.size() == 4;
+    }
 }

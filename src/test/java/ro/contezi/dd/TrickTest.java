@@ -17,4 +17,15 @@ public class TrickTest {
                 .getWinner()).contains(new Spade('Q'));
     }
 
+    @Test
+    public void completeTrick() throws Exception {
+        assertThat(new Trick(Arrays.asList(new Spade(2), new Diamond('A'), new Spade('Q'), new Spade(10)))
+                .isComplete()).isTrue();
+    }
+    
+    @Test
+    public void incompleteTrick() throws Exception {
+        assertThat(new Trick(Arrays.asList(new Spade(2), new Diamond('A'), new Spade(10)))
+                .isComplete()).isFalse();
+    }
 }
