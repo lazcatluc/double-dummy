@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Card<T extends Card<T>> implements Comparable<T> {
+public class Card<T extends Card<T>> implements Comparable<Card<?>> {
 
     private static final Map<Character, Integer> HONORS;
     
@@ -33,8 +33,8 @@ public class Card<T extends Card<T>> implements Comparable<T> {
     }
     
     @Override
-    public int compareTo(T other) {
-        return Integer.compare(value, other.getValue());
+    public int compareTo(Card<?> other) {
+        return Integer.compare(value, getClass().cast(other).getValue());
     }
 
     @Override
