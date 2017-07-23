@@ -25,6 +25,16 @@ public class ExcludedCardsFromBetweenTest {
     public void spade2And5areEquivalent() {
         assertThat(excludedCardsFromBetween.areEquivalent(new Spade(2), new Spade(5))).isTrue();
     }
+    
+    @Test
+    public void spade2And2areEquivalent() {
+        assertThat(excludedCardsFromBetween.areEquivalent(new Spade(2), new Spade(2))).isTrue();
+    }
+    
+    @Test
+    public void spade2AndHeart2areNotEquivalent() {
+        assertThat(excludedCardsFromBetween.areEquivalent(new Spade(2), new Heart(2))).isFalse();
+    }
 
     @Test
     public void heart4And3areEquivalent() {
