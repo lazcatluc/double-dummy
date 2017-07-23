@@ -2,11 +2,11 @@ package ro.contezi.dd.cards;
 
 public class Diamond extends Card<Diamond> {
 
-    private Diamond(char value) {
+    public Diamond(char value) {
         super(value);
     }
 
-    private Diamond(int value) {
+    public Diamond(int value) {
         super(value);
     }
 

@@ -2,7 +2,7 @@ package ro.contezi.dd.cards;
 
 public class Heart extends Card<Heart> {
 
-    private Heart(int value) {
+    public Heart(int value) {
         super(value);
     }
 
