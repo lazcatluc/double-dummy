@@ -19,6 +19,10 @@ public class Trick {
                                        .findFirst());
     }
     
+    public Optional<Card<?>> getFirstCard() {
+        return cards.stream().findFirst();
+    }
+    
     public boolean isComplete() {
         return cards.size() == 4;
     }
