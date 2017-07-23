@@ -8,6 +8,7 @@ import java.util.HashSet;
 import org.junit.Before;
 import org.junit.Test;
 
+import ro.contezi.dd.cards.Heart;
 import ro.contezi.dd.cards.Spade;
 
 public class ExcludedCardsFromBetweenTest {
@@ -25,4 +26,18 @@ public class ExcludedCardsFromBetweenTest {
         assertThat(excludedCardsFromBetween.areEquivalent(new Spade(2), new Spade(5))).isTrue();
     }
 
+    @Test
+    public void heart4And3areEquivalent() {
+        assertThat(excludedCardsFromBetween.areEquivalent(new Heart(4), new Heart(3))).isTrue();
+    }
+    
+    @Test
+    public void heart5And3areNotEquivalent() {
+        assertThat(excludedCardsFromBetween.areEquivalent(new Heart(5), new Heart(3))).isFalse();
+    }
+    
+    @Test
+    public void spade5And8areNotEquivalent() {
+        assertThat(excludedCardsFromBetween.areEquivalent(new Spade(5), new Spade(8))).isFalse();
+    }
 }

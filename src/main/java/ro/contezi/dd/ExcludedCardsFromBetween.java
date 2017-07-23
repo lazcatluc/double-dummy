@@ -28,7 +28,6 @@ public class ExcludedCardsFromBetween implements EquivalenceDecider {
             Constructor<? extends Card> constructor = card.getClass().getConstructor(int.class);
             for (int i = Math.min(card.getValue(), anotherCard.getValue()) + 1; i < Math.max(card.getValue(), anotherCard.getValue()); i++) {
                 Card<?> inBetweenCard = constructor.newInstance(i);
-                LOGGER.debug(inBetweenCard);
                 if (!excludedCards.contains(inBetweenCard)) {
                     return false;
                 }
