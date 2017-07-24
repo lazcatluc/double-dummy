@@ -50,4 +50,58 @@ public class HandEquivalenceTest {
             Arrays.asList(0, 1),
             1));
     }
+    
+    @Test
+    public void computesHandValueBasedOnCardsKeepingTrackOfPlayedCardsOnCurrentTrick() throws Exception {
+        Hand hand = new Hand(
+                Arrays.asList(Arrays.asList(new Spade(2), new Spade(6)),
+                              Arrays.asList(new Spade(5), new Spade(9)),
+                              Arrays.asList(new Spade(4), new Spade(8)),
+                              Arrays.asList(new Spade(3), new Spade(7))
+                             ),
+                new HashSet<>(Arrays.asList(new Spade(2), new Spade(5), new Spade(4), new Spade(3))),
+                Arrays.asList(0, 1),
+                new Trick(Arrays.asList(new Spade(9))),
+                2);
+        assertThat(hand.getHandValue()).isEqualTo(Arrays.asList(
+            Arrays.asList(Arrays.asList(2), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()), 
+            Arrays.asList(Arrays.asList(5), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()),
+            Arrays.asList(Arrays.asList(4), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()),
+            Arrays.asList(Arrays.asList(3), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()),
+            Arrays.asList(new Spade(5)),
+            Arrays.asList(0, 1),
+            2));
+    }
+    
+    @Test
+    public void isTerminalWhenAllCardsArePlayed() throws Exception {
+        Hand hand = new Hand(
+                Arrays.asList(Arrays.asList(new Spade(2)),
+                              Arrays.asList(new Spade(5)),
+                              Arrays.asList(new Spade(4)),
+                              Arrays.asList(new Spade(3))
+                             ),
+                new HashSet<>(Arrays.asList(new Spade(2), new Spade(5), new Spade(4), new Spade(3))),
+                Arrays.asList(0, 1),
+                new Trick(Collections.emptyList()),
+                1);
+        
+        assertThat(hand.isTerminal()).isTrue();
+    }
+    
+    @Test
+    public void isNotTerminalWhenThereAreCardsLeftToBePlayed() throws Exception {
+        Hand hand = new Hand(
+                Arrays.asList(Arrays.asList(new Spade(2)),
+                              Arrays.asList(new Spade(5)),
+                              Arrays.asList(new Spade(4)),
+                              Arrays.asList(new Spade(3))
+                             ),
+                Collections.emptySet(),
+                Arrays.asList(0, 1),
+                new Trick(Collections.emptyList()),
+                1);
+        
+        assertThat(hand.isTerminal()).isFalse();
+    }
 }
