@@ -42,10 +42,14 @@ public class Hand implements ABNode {
         for (int i = 0; i < PLAYERS; i++) {
             List<Card<?>> player = new ArrayList<>();
             for (int j = 0; j < SUITS.size(); j++) {
+                List<Card<?>> suit = new ArrayList<>();
                 char[] playerSuitCards = spl[i * PLAYERS + j].toCharArray();
                 for (char playerSuitCard : playerSuitCards) {
-                    player.add(SUIT_FACTORY.get(j).apply(playerSuitCard));
+                    suit.add(SUIT_FACTORY.get(j).apply(playerSuitCard));
                 }
+                Collections.sort(suit);
+                Collections.reverse(suit);
+                player.addAll(suit);
             }
             players.add(Collections.unmodifiableList(player));
         }
