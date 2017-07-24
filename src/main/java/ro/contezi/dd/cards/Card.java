@@ -1,5 +1,7 @@
 package ro.contezi.dd.cards;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +28,15 @@ public class Card<T extends Card<T>> implements Comparable<Card<?>> {
     
     public Card(char value) {
         this.value = getCharacterValue(value);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public T getCardOfTheSameSuit(int value) {
+        try {
+            return ((Constructor<T>) getClass().getConstructor(int.class)).newInstance(value);
+        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
         
     private static int getCharacterValue(Character character) {

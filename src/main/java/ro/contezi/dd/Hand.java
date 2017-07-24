@@ -29,7 +29,7 @@ public class Hand {
         this.currentPlayer = 0;
     }
     
-    private Hand(List<List<Card<?>>> players, Set<Card<?>> playedCards, List<Integer> tricksWon, Trick currentTrick,
+    Hand(List<List<Card<?>>> players, Set<Card<?>> playedCards, List<Integer> tricksWon, Trick currentTrick,
             int currentPlayer) {
         this.players = players;
         if (currentTrick.isComplete()) {
@@ -81,8 +81,14 @@ public class Hand {
         return tricksWon;
     }
     
-    public int getCardValue(Card<?> card) {
-        return card.getValue();
+    private int getCardValue(Card<?> card) {
+        int cardValue = card.getValue();
+        for (int i = 2; i < card.getValue(); i++) {
+            if (playedCards.contains(card.getCardOfTheSameSuit(i))) {
+                cardValue--;
+            }
+        }
+        return cardValue;
     }
 
     public List<Object> getHandValue() {
@@ -90,7 +96,9 @@ public class Hand {
         players.forEach(playerCards -> {
             List<List<Integer>> playerSuitedCards = new ArrayList<>();
             Arrays.asList(Spade.class, Heart.class, Diamond.class, Club.class).stream().forEach(suit -> {
-                playerSuitedCards.add(playerCards.stream().filter(suit::isInstance)
+                playerSuitedCards.add(playerCards.stream()
+                                                 .filter(suit::isInstance)
+                                                 .filter(card -> !playedCards.contains(card))
                                                  .map(this::getCardValue).collect(Collectors.toList()));
             });
             handValue.add(playerSuitedCards);
