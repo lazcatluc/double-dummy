@@ -1,8 +1,10 @@
 package ro.contezi.dd;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import ro.contezi.dd.cards.Card;
@@ -28,15 +30,25 @@ public class TrickPlayer {
     }
     
     public List<Trick> getNextTricks() {
+        return getNextTricks(Collections.emptySet());
+    }
+    
+    public List<Trick> getNextTricks(Set<Card<?>> excludedCards) {
         List<Card<?>> continuations = getContinuations();
         List<Trick> newTricks = new ArrayList<>();
-        newTricks.add(trick.add(continuations.get(0)));
+        addToTricksIfNotExcluded(newTricks, continuations.get(0), excludedCards);
         for (int i = 1; i < continuations.size(); i++) {
             if (equivalentCards.areEquivalent(continuations.get(i), continuations.get(i - 1))) {
                 continue;
             }
-            newTricks.add(trick.add(continuations.get(i)));
+            addToTricksIfNotExcluded(newTricks, continuations.get(i), excludedCards);
         }
         return newTricks;
+    }
+    
+    private void addToTricksIfNotExcluded(List<Trick> newTricks, Card<?> card, Set<Card<?>> excluded) {
+        if (!excluded.contains(card)) {
+            newTricks.add(trick.add(card));
+        }
     }
 }

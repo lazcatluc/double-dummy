@@ -52,4 +52,13 @@ public class TrickPlayerTest {
             .isEqualTo(Arrays.asList(new Trick(Arrays.asList(new Spade(2), new Spade(3))),
                                      new Trick(Arrays.asList(new Spade(2), new Spade(9)))));
     }
+    
+    @Test
+    public void getsNewTricksWithOnlyNotExcludedCards() {
+        Trick trick = new Trick(Arrays.asList(new Spade(2)));
+        List<Card<?>> playerCards = Arrays.asList(new Spade(3), new Spade(4), new Spade(5), new Spade(9));
+        
+        assertThat(new TrickPlayer(trick, playerCards, new TouchingCards()).getNextTricks(Collections.singleton(new Spade(9))))
+            .isEqualTo(Arrays.asList(new Trick(Arrays.asList(new Spade(2), new Spade(3)))));
+    }
 }

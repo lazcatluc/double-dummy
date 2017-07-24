@@ -50,4 +50,19 @@ public class ExcludedCardsFromBetweenTest {
     public void spade5And8areNotEquivalent() {
         assertThat(excludedCardsFromBetween.areEquivalent(new Spade(5), new Spade(8))).isFalse();
     }
+    
+    @Test
+    public void spade6And7AreNotEquivalent() throws Exception {
+        assertThat(excludedCardsFromBetween.areEquivalent(new Spade(6), new Spade(7))).isFalse();
+    }
+    
+    @Test
+    public void spade7And6AreNotEquivalent() throws Exception {
+        assertThat(excludedCardsFromBetween.areEquivalent(new Spade(7), new Spade(6))).isFalse();
+    }
+    
+    @Test
+    public void spade3And4reEquivalent() throws Exception {
+        assertThat(excludedCardsFromBetween.areEquivalent(new Spade(3), new Spade(4))).isTrue();
+    }
 }

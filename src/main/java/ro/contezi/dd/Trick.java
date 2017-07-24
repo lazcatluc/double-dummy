@@ -31,6 +31,10 @@ public class Trick {
     public Optional<Card<?>> getFirstCard() {
         return cards.stream().findFirst();
     }
+
+    public List<Card<?>> getCards() {
+        return cards;
+    }
     
     public boolean isComplete() {
         return cards.size() == 4;
@@ -49,5 +53,6 @@ public class Trick {
             return false;
         return Objects.equals(this.cards, Trick.class.cast(obj).cards);
     }
+
     
 }

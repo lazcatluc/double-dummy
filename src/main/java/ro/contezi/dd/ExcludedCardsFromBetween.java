@@ -23,6 +23,12 @@ public class ExcludedCardsFromBetween implements EquivalenceDecider {
         if (!card.getClass().isInstance(anotherCard)) {
             return false;
         }
+        if (excludedCards.contains(card) && !excludedCards.contains(anotherCard)) {
+            return false;
+        }
+        if (excludedCards.contains(anotherCard) && !excludedCards.contains(card)) {
+            return false;
+        }
         try {
             @SuppressWarnings("rawtypes")
             Constructor<? extends Card> constructor = card.getClass().getConstructor(int.class);
