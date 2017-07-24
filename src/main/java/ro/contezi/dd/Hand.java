@@ -6,8 +6,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import ro.contezi.dd.cards.Card;
+import ro.contezi.dd.cards.Club;
+import ro.contezi.dd.cards.Diamond;
+import ro.contezi.dd.cards.Heart;
+import ro.contezi.dd.cards.Spade;
 
 public class Hand {
     private final List<List<Card<?>>> players;
@@ -74,5 +79,25 @@ public class Hand {
 
     public List<Integer> getTricksWon() {
         return tricksWon;
+    }
+    
+    public int getCardValue(Card<?> card) {
+        return card.getValue();
+    }
+
+    public List<Object> getHandValue() {
+        List<Object> handValue = new ArrayList<>();
+        players.forEach(playerCards -> {
+            List<List<Integer>> playerSuitedCards = new ArrayList<>();
+            Arrays.asList(Spade.class, Heart.class, Diamond.class, Club.class).stream().forEach(suit -> {
+                playerSuitedCards.add(playerCards.stream().filter(suit::isInstance)
+                                                 .map(this::getCardValue).collect(Collectors.toList()));
+            });
+            handValue.add(playerSuitedCards);
+        });
+        handValue.add(currentTrick.getCards());
+        handValue.add(tricksWon);
+        handValue.add(currentPlayer);
+        return handValue;
     }
 }
