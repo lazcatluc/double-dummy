@@ -23,7 +23,7 @@ import ro.contezi.dd.cards.Heart;
 import ro.contezi.dd.cards.Spade;
 
 public class Hand implements ABNode {
-    private static final Logger LOGGER = LogManager.getLogger(Card.class);
+    private static final Logger LOGGER = LogManager.getLogger(Hand.class);
     
     private static final List<Class<? extends Card<?>>> SUITS = Arrays.asList(Spade.class, Heart.class, Diamond.class, Club.class);
     private static final List<Function<Character, Card<?>>> SUIT_FACTORY = Arrays.asList(Spade::new, Heart::new, Diamond::new, Club::new);
@@ -36,6 +36,11 @@ public class Hand implements ABNode {
     private final int currentPlayer;
     
     public Hand(String cards) {
+        this(readCards(cards));
+        players.forEach(LOGGER::info);
+    }
+    
+    Hand(String cards, double[] honorValues) {
         this(readCards(cards));
         players.forEach(LOGGER::info);
     }
@@ -105,11 +110,11 @@ public class Hand implements ABNode {
     }
 
     public List<Hand> nextHands() {
-        LOGGER.debug("Expanding " + this);
+        LOGGER.trace("Expanding " + this);
         TrickPlayer trickPlayer = new TrickPlayer(currentTrick, getCurrentPlayerCards(),
                 new ExcludedCardsFromBetween(playedCards));
         List<Trick> nextTricks = trickPlayer.getNextTricks(playedCards);
-        LOGGER.debug("Found possible next tricks: " + nextTricks);
+        LOGGER.trace("Found possible next tricks: " + nextTricks);
         int nextPlayer = currentPlayer + 1;
         if (nextPlayer == players.size()) {
             nextPlayer = 0;
@@ -178,18 +183,7 @@ public class Hand implements ABNode {
 
     @Override
     public double heuristicValue() {
-        int previousTricks = tricksWon.get(0) - tricksWon.get(1);
-        Optional<Card<?>> winner = currentTrick.getWinner();
-        if (winner.isPresent()) {
-            Card<?> card = winner.get();
-            int player = 0;
-            while (!players.get(player).contains(card)) {
-                player++;
-            }
-            double winnerBonus = -(player % 2) / 0.5;
-            return previousTricks + winnerBonus;
-        }
-        return previousTricks;
+        return tricksWon.get(0) - tricksWon.get(1);
     }
 
     @Override

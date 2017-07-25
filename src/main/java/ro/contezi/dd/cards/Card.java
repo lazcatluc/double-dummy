@@ -76,6 +76,10 @@ public class Card<T extends Card<T>> implements Comparable<Card<?>> {
     public final int getValue() {
         return value;
     }
+    
+    public static int max() {
+        return HONORS.get('A');
+    }
 
     @Override
     public String toString() {
