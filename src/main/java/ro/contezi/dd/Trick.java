@@ -22,6 +22,10 @@ public class Trick {
                                        .findFirst());
     }
     
+    public Optional<Integer> getWinnerPosition() {
+        return getWinner().map(cards::indexOf);
+    }
+    
     public Trick add(Card<?> card) {
         List<Card<?>> newTrick = new ArrayList<>(cards);
         newTrick.add(card);

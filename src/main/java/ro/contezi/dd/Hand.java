@@ -34,6 +34,7 @@ public class Hand implements ABNode {
     private final List<Integer> tricksWon;
     private final Trick currentTrick;
     private final int currentPlayer;
+    private final Honors honors = new Honors(new double[] {4.25, 3, 1.75, 1, 0.25});
     
     public Hand(String cards) {
         this(readCards(cards));
@@ -109,6 +110,22 @@ public class Hand implements ABNode {
         return currentTrick;
     }
 
+    public Hand nextHand() {
+        TrickPlayer trickPlayer = new TrickPlayer(currentTrick, getCurrentPlayerCards(),
+                new ExcludedCardsFromBetween(playedCards));
+        Trick trick = trickPlayer.getNextTricks(playedCards).get(0);
+        int nextPlayer = currentPlayer + 1;
+        if (nextPlayer == players.size()) {
+            nextPlayer = 0;
+        }
+        Hand nextHand = new Hand(players, playedCards, tricksWon, trick, nextPlayer);
+        if (trick.isComplete() && Math.abs(nextHand.currentPlayer - this.currentPlayer) % 2 == 0 && !nextHand.isTerminal()) {
+            return nextHand.nextHand();
+        }
+        else {
+            return nextHand;
+        }
+    }
     public List<Hand> nextHands() {
         LOGGER.trace("Expanding " + this);
         TrickPlayer trickPlayer = new TrickPlayer(currentTrick, getCurrentPlayerCards(),
@@ -119,17 +136,19 @@ public class Hand implements ABNode {
         if (nextPlayer == players.size()) {
             nextPlayer = 0;
         }
+        List<Hand> nextHandsWhenWeWonTheCurrentTrick = new ArrayList<>();
         List<Hand> nextHands = new ArrayList<>();
         for (Trick trick : nextTricks) {
             Hand nextHand = new Hand(players, playedCards, tricksWon, trick, nextPlayer);
             if (trick.isComplete() && Math.abs(nextHand.currentPlayer - this.currentPlayer) % 2 == 0 && !nextHand.isTerminal()) {
-                nextHands.addAll(nextHand.nextHands());
+                nextHandsWhenWeWonTheCurrentTrick.addAll(nextHand.nextHands());
             }
             else {
                 nextHands.add(nextHand);
             }
         }
-        return nextHands;
+        nextHandsWhenWeWonTheCurrentTrick.addAll(nextHands);
+        return nextHandsWhenWeWonTheCurrentTrick;
     }
 
     public List<Integer> getTricksWon() {

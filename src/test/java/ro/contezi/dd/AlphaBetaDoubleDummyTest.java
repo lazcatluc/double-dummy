@@ -40,14 +40,10 @@ public class AlphaBetaDoubleDummyTest {
         String hand = "QT9.AQ432.Q542.J.AKJ6.KT865.T3.53.754..J876.QT9762.832.J97.AK9.AK84";
         
         Hand node = new Hand(hand);
-        for (int i = 20; i <= 21; i++) {
+        for (int i = 25; i <= 25; i++) {
             LOGGER.info("Found value at depth " + i + ": " +
                 new MaximizingAlphaBeta(node, i, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY).getValue());
         }
-        node = new Hand(hand);
-        for (int i = 21; i <= 21; i++) {
-            LOGGER.info("Found value at depth " + i + ": " +
-                new MaximizingAlphaBeta(node, i, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY).getValue());
-        }
+        
     }
 }
