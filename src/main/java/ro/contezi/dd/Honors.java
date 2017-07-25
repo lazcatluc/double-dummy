@@ -21,6 +21,9 @@ public class Honors implements HonorValue {
     }
 
     private double computeHonorValue(Card<?> card, Set<Card<?>> excludedCards) {
+        if (excludedCards.contains(card)) {
+            return 0;
+        }
         int higherCardsLeftInSuit = 
                 (int)IntStream.range(card.getValue() + 1, Card.max() + 1)
                 .mapToObj(card::getCardOfTheSameSuit)
