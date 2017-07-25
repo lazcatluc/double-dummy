@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -177,7 +178,18 @@ public class Hand implements ABNode {
 
     @Override
     public double heuristicValue() {
-        return tricksWon.get(0) - tricksWon.get(1);
+        int previousTricks = tricksWon.get(0) - tricksWon.get(1);
+        Optional<Card<?>> winner = currentTrick.getWinner();
+        if (winner.isPresent()) {
+            Card<?> card = winner.get();
+            int player = 0;
+            while (!players.get(player).contains(card)) {
+                player++;
+            }
+            double winnerBonus = -(player % 2) / 0.5;
+            return previousTricks + winnerBonus;
+        }
+        return previousTricks;
     }
 
     @Override
