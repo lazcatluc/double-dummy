@@ -62,6 +62,48 @@ public class NextHandTest {
         
         assertThat(hand.getCurrentPlayerCards()).isEqualTo(Arrays.asList(new Spade(5)));
     }
+    
+    @Test
+    public void playsTwoTricksWhenLastPlayerWinsTrick() throws Exception {
+        Hand initial = new Hand(Arrays.asList(
+                Arrays.asList(new Spade(2), new Spade(6)),
+                Arrays.asList(new Spade(3), new Spade(7)),
+                Arrays.asList(new Spade(4), new Spade(8)),
+                Arrays.asList(new Spade(5), new Spade(9))
+           ));
+        Hand beforeLast = initial.nextHands().get(0).nextHands().get(0).nextHands().get(0);
+        
+        assertThat(beforeLast.getCurrentTrick().getCards()).isEqualTo(Arrays.asList(new Spade(2), new Spade(3), new Spade(4)));
+        assertThat(beforeLast.nextHands().get(0).getCurrentTrick().getCards()).isEqualTo(Arrays.asList(new Spade(9)));
+    }
+    
+    @Test
+    public void playsTwoTricksWhenLastPlayersPartnerWinsTrick() throws Exception {
+        Hand initial = new Hand(Arrays.asList(
+                Arrays.asList(new Spade(2), new Spade(6)),
+                Arrays.asList(new Spade(5), new Spade(7)),
+                Arrays.asList(new Spade(3), new Spade(8)),
+                Arrays.asList(new Spade(4), new Spade(9))
+           ));
+        Hand beforeLast = initial.nextHands().get(0).nextHands().get(0).nextHands().get(0);
+        
+        assertThat(beforeLast.getCurrentTrick().getCards()).isEqualTo(Arrays.asList(new Spade(2), new Spade(5), new Spade(3)));
+        assertThat(beforeLast.nextHands().get(0).getCurrentTrick().getCards()).isEqualTo(Arrays.asList(new Spade(7)));
+    }
+    
+    @Test
+    public void playsSingleTickWhenPlayerBeforeLastWinsTrick() throws Exception {
+        Hand initial = new Hand(Arrays.asList(
+                Arrays.asList(new Spade(2), new Spade(6)),
+                Arrays.asList(new Spade(3), new Spade(7)),
+                Arrays.asList(new Spade(5), new Spade(8)),
+                Arrays.asList(new Spade(4), new Spade(9))
+           ));
+        Hand beforeLast = initial.nextHands().get(0).nextHands().get(0).nextHands().get(0);
+        
+        assertThat(beforeLast.getCurrentTrick().getCards()).isEqualTo(Arrays.asList(new Spade(2), new Spade(3), new Spade(5)));
+        assertThat(beforeLast.nextHands().get(0).getCurrentTrick().getCards()).isEqualTo(Collections.emptyList());
+    }
 
     protected Hand completeTrickHand() {
         return nextHand.get(0).nextHands().get(0).nextHands().get(0).nextHands().get(0);

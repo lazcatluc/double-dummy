@@ -35,6 +35,15 @@ public class TrickPlayerTest {
     }
     
     @Test
+    public void getsAllContinuationsWhenOnlyExcludedSpades() {
+        Trick trick = new Trick(Arrays.asList(new Spade(2)));
+        List<Card<?>> playerCards = Arrays.asList(new Spade(3), new Diamond(3), new Heart(4), new Club(5));
+        
+        assertThat(new TrickPlayer(trick, playerCards, (c1, c2) -> false).getContinuations(Collections.singleton(new Spade(3))))
+            .isEqualTo(Arrays.asList(new Diamond(3), new Heart(4), new Club(5)));
+    }
+    
+    @Test
     public void getsAllContinuationsOnInitialLead() {
         Trick trick = new Trick(Collections.emptyList());
         List<Card<?>> playerCards = Arrays.asList(new Diamond(3), new Heart(4), new Club(5));

@@ -54,5 +54,9 @@ public class Trick {
         return Objects.equals(this.cards, Trick.class.cast(obj).cards);
     }
 
-    
+    @Override
+    public String toString() {
+        return "Trick [cards=" + cards + "]";
+    }
+
 }

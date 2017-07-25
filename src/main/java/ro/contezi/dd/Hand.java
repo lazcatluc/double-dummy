@@ -11,6 +11,9 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import ro.contezi.ab.ABNode;
 import ro.contezi.dd.cards.Card;
 import ro.contezi.dd.cards.Club;
@@ -19,6 +22,8 @@ import ro.contezi.dd.cards.Heart;
 import ro.contezi.dd.cards.Spade;
 
 public class Hand implements ABNode {
+    private static final Logger LOGGER = LogManager.getLogger(Card.class);
+    
     private static final List<Class<? extends Card<?>>> SUITS = Arrays.asList(Spade.class, Heart.class, Diamond.class, Club.class);
     private static final List<Function<Character, Card<?>>> SUIT_FACTORY = Arrays.asList(Spade::new, Heart::new, Diamond::new, Club::new);
     private static final int PLAYERS = 4;
@@ -31,6 +36,7 @@ public class Hand implements ABNode {
     
     public Hand(String cards) {
         this(readCards(cards));
+        players.forEach(LOGGER::info);
     }
 
     static List<List<Card<?>>> readCards(String cards) {
@@ -98,16 +104,24 @@ public class Hand implements ABNode {
     }
 
     public List<Hand> nextHands() {
+        LOGGER.debug("Expanding " + this);
         TrickPlayer trickPlayer = new TrickPlayer(currentTrick, getCurrentPlayerCards(),
                 new ExcludedCardsFromBetween(playedCards));
         List<Trick> nextTricks = trickPlayer.getNextTricks(playedCards);
+        LOGGER.debug("Found possible next tricks: " + nextTricks);
         int nextPlayer = currentPlayer + 1;
         if (nextPlayer == players.size()) {
             nextPlayer = 0;
         }
         List<Hand> nextHands = new ArrayList<>();
         for (Trick trick : nextTricks) {
-            nextHands.add(new Hand(players, playedCards, tricksWon, trick, nextPlayer));
+            Hand nextHand = new Hand(players, playedCards, tricksWon, trick, nextPlayer);
+            if (trick.isComplete() && Math.abs(nextHand.currentPlayer - this.currentPlayer) % 2 == 0 && !nextHand.isTerminal()) {
+                nextHands.addAll(nextHand.nextHands());
+            }
+            else {
+                nextHands.add(nextHand);
+            }
         }
         return nextHands;
     }
@@ -126,32 +140,30 @@ public class Hand implements ABNode {
         return cardValue;
     }
 
+    private List<Object> handValue;
     public List<Object> getHandValue() {
-        List<Object> handValue = new ArrayList<>();
-        players.forEach(playerCards -> {
-            List<List<Integer>> playerSuitedCards = new ArrayList<>();
-            SUITS.stream().forEach(suit -> {
-                playerSuitedCards
-                        .add(playerCards.stream().filter(suit::isInstance).filter(card -> !playedCards.contains(card))
-                                .map(this::getCardValue).collect(Collectors.toList()));
+        if (handValue == null) {
+            handValue = new ArrayList<>();
+            players.forEach(playerCards -> {
+                List<List<Integer>> playerSuitedCards = new ArrayList<>();
+                SUITS.stream().forEach(suit -> {
+                    playerSuitedCards
+                            .add(playerCards.stream().filter(suit::isInstance).filter(card -> !playedCards.contains(card))
+                                    .map(this::getCardValue).collect(Collectors.toList()));
+                });
+                handValue.add(playerSuitedCards);
             });
-            handValue.add(playerSuitedCards);
-        });
-        handValue.add(currentTrick.getCards().stream().map(card -> card.getCardOfTheSameSuit(getCardValue(card)))
-                .collect(Collectors.toList()));
-        handValue.add(tricksWon);
-        handValue.add(currentPlayer);
+            handValue.add(currentTrick.getCards().stream().map(card -> card.getCardOfTheSameSuit(getCardValue(card)))
+                    .collect(Collectors.toList()));
+            handValue.add(tricksWon);
+            handValue.add(currentPlayer);
+        }
         return handValue;
     }
 
-    private Integer hashCode;
-    
     @Override
     public int hashCode() {
-        if (hashCode == null) {
-            hashCode = getHandValue().hashCode();
-        }
-        return hashCode;
+        return getHandValue().hashCode();
     }
 
     @Override
@@ -176,6 +188,12 @@ public class Hand implements ABNode {
     @Override
     public Collection<? extends ABNode> children() {
         return nextHands();
+    }
+
+    @Override
+    public String toString() {
+        return "Hand [playedCards=" + playedCards + ", tricksWon=" + tricksWon
+                + ", currentTrick=" + currentTrick + ", currentPlayer=" + currentPlayer + "]";
     }
     
 }

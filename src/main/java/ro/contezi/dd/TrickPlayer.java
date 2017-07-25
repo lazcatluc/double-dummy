@@ -21,12 +21,7 @@ public class TrickPlayer {
     }
     
     List<Card<?>> getContinuations() {
-        Optional<List<Card<?>>> cardsInTheSameSuitAsFirstCardOfTrick = trick.getFirstCard().map(Card::getClass)
-            .map(clazz -> playerCards.stream().filter(clazz::isInstance).collect(Collectors.toList()));
-        if (cardsInTheSameSuitAsFirstCardOfTrick.isPresent() && !cardsInTheSameSuitAsFirstCardOfTrick.get().isEmpty()) {
-            return cardsInTheSameSuitAsFirstCardOfTrick.get();
-        }
-        return playerCards;
+        return getContinuations(Collections.emptySet());
     }
     
     public List<Trick> getNextTricks() {
@@ -34,7 +29,7 @@ public class TrickPlayer {
     }
     
     public List<Trick> getNextTricks(Set<Card<?>> excludedCards) {
-        List<Card<?>> continuations = getContinuations();
+        List<Card<?>> continuations = getContinuations(excludedCards);
         List<Trick> newTricks = new ArrayList<>();
         addToTricksIfNotExcluded(newTricks, continuations.get(0), excludedCards);
         for (int i = 1; i < continuations.size(); i++) {
@@ -50,5 +45,15 @@ public class TrickPlayer {
         if (!excluded.contains(card)) {
             newTricks.add(trick.add(card));
         }
+    }
+
+    List<Card<?>> getContinuations(Set<Card<?>> excludedCards) {
+        Optional<List<Card<?>>> cardsInTheSameSuitAsFirstCardOfTrick = trick.getFirstCard().map(Card::getClass)
+                .map(clazz -> playerCards.stream().filter(clazz::isInstance).filter(card -> !excludedCards.contains(card))
+                        .collect(Collectors.toList()));
+            if (cardsInTheSameSuitAsFirstCardOfTrick.isPresent() && !cardsInTheSameSuitAsFirstCardOfTrick.get().isEmpty()) {
+                return cardsInTheSameSuitAsFirstCardOfTrick.get();
+            }
+            return playerCards.stream().filter(card -> !excludedCards.contains(card)).collect(Collectors.toList());
     }
 }
